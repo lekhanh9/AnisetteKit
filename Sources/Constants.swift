@@ -9,9 +9,9 @@
 import Foundation
 
 public enum AnisetteConstants {
-    public static let defaultClientInfo     = "<PC> <Windows;6.2(0,0);9200> <com.apple.AuthKit/1 (com.apple.iTunes/12.12.4.1)>"
-    public static let defaultUserAgent      = "akd/1.0 CFNetwork/808.1.4"
-    public static let defaultRoutingInfo    = "17106176"    // 0x01050500 default US routing code 
+    public static let defaultClientInfo     = "<MacBookPro13,3> <Mac OS X;10.12.6;16G29> <com.apple.AuthKit/1 (com.apple.akd/1.0)>"
+    public static let defaultUserAgent      = "akd/1.0 CFNetwork/811.5.4 Darwin/16.7.0"
+    public static let defaultRoutingInfo    = "33883392"    // 0x01050500 default US routing code 
     public static let defaultLocalUserID    = "0000000000000000000000000000000000000000000000000000000000000001"
     public static let defaultSerialNumber   = "0"
     public static let defaultLocale         = "en_US"
