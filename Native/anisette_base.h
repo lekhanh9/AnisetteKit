@@ -201,8 +201,8 @@ struct ADISymbols {
 
 extern const ADISymbols kADISymbols;
 
-static const char* const kAppleRoutingInfoDefault = "17106176";
-static const char* const kAppleLocalUserDefault   = "0000000000000000000000000000000000000000000000000000000000000001";
+static const char* const kAppleRoutingInfoDefault = "33883392";
+static const char* const kAppleLocalUserDefault   = "";
 
 std::string base64_encode(const uint8_t* input, size_t length);
 std::string format_uuid_string(const uint8_t* identifier);

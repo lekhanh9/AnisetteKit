@@ -222,10 +222,15 @@ int32_t get_anisette_headers_uc(
     std::string mid = base64_encode(mid_data.data(), final_mid_len);
     std::string otp = base64_encode(otp_data.data(), final_otp_len);
 
+    std::string uuid = format_uuid_string(identifier);
+    for (auto &c : uuid) c = toupper(c);
+    std::string lu = base64_encode((const uint8_t*)uuid.c_str(), uuid.length());
+
     std::stringstream ss;
     ss << "{\"X-Apple-I-MD-M\":\"" << mid
        << "\",\"X-Apple-I-MD\":\"" << otp
-       << "\",\"X-Apple-I-MD-RINFO\":\"17106176\",\"X-Apple-I-MD-LU\":\"0000000000000000000000000000000000000000000000000000000000000001\"}";
+       << "\",\"X-Apple-I-MD-RINFO\":\"" << kAppleRoutingInfoDefault
+       << "\",\"X-Apple-I-MD-LU\":\"" << lu << "\"}";
     *out_json = strdup(ss.str().c_str());
 
     return ANISETTE_OK;

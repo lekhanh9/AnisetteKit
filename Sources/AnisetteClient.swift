@@ -153,13 +153,21 @@ extension AnisetteClient {
             adiPb: [UInt8](adiPbData)
         )
 
+        let defaultDevID = identifier.uuidString.uppercased()
         let headers = AnisetteRequestHeaders.defaultHeaders
             .applyingOverrides(customHeaders)
             .with {
                 $0.oneTimePassword = response.oneTimePassword
                 $0.machineID       = response.machineID
-                if $0.deviceID == nil { $0.deviceID = identifier.uuidString.uppercased() }
-                if let storedRinfo = getStoredRoutingInfo(for: identifier) { $0.routingInfo = storedRinfo }
+                if $0.deviceID == nil || $0.deviceID?.isEmpty == true {
+                    $0.deviceID = defaultDevID
+                }
+                if $0.localUserID == nil || $0.localUserID?.isEmpty == true || $0.localUserID?.contains("0000000000") == true {
+                    $0.localUserID = Data(($0.deviceID ?? defaultDevID).utf8).base64EncodedString()
+                }
+                if let storedRinfo = getStoredRoutingInfo(for: identifier) {
+                    $0.routingInfo = storedRinfo
+                }
                 if $0.date == nil && $0.clientTime == nil { $0.date = Date() }
                 if customHeaders?.clientInfo == nil { $0.clientInfo = self.clientInfo }
                 if customHeaders?.userAgent == nil { $0.userAgent = self.userAgent }
@@ -238,7 +246,7 @@ extension AnisetteClient {
         let lookupReq = createRequest(url: lookupURL, identifier: identifier, httpMethod: "GET", routingInfo: nil as String?, headers: customHeaders)
 
         let (lookupData, lookupResp) = try await sendRequest(lookupReq, step: "Lookup", endpointName: "Apple lookup")
-        var activeRoutingInfo = extractRoutingInfo(from: lookupResp, data: lookupData) ?? customHeaders?.routingInfo
+        var activeRoutingInfo = extractRoutingInfo(from: lookupResp, data: lookupData) ?? customHeaders?.routingInfo ?? AnisetteConstants.defaultRoutingInfo
 
         guard let plist = try PropertyListSerialization.propertyList(from: lookupData, options: [], format: nil) as? [String: Any],
               let urls = plist["urls"] as? [String: String],
@@ -302,10 +310,22 @@ extension AnisetteClient {
         if let data = data,
            let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
            let responseDict = plist["Response"] as? [String: Any] {
+            if let str = responseDict["X-Apple-I-MD-RINFO"] as? String, !str.isEmpty {
+                return str
+            }
+            if let num = responseDict["X-Apple-I-MD-RINFO"] as? NSNumber {
+                return num.stringValue
+            }
             if let str = responseDict["routing-info"] as? String, !str.isEmpty {
                 return str
             }
             if let num = responseDict["routing-info"] as? NSNumber {
+                return num.stringValue
+            }
+            if let str = responseDict["rinfo"] as? String, !str.isEmpty {
+                return str
+            }
+            if let num = responseDict["rinfo"] as? NSNumber {
                 return num.stringValue
             }
         }
@@ -332,10 +352,16 @@ extension AnisetteClient {
         var req = URLRequest(url: url)
         req.httpMethod = httpMethod
 
+        let defaultDevID = identifier.uuidString.uppercased()
         let headers = AnisetteRequestHeaders.defaultHeaders
             .applyingOverrides(customHeaders)
             .with {
-                if $0.deviceID == nil { $0.deviceID = identifier.uuidString.uppercased() }
+                if $0.deviceID == nil || $0.deviceID?.isEmpty == true {
+                    $0.deviceID = defaultDevID
+                }
+                if $0.localUserID == nil || $0.localUserID?.isEmpty == true || $0.localUserID?.contains("0000000000") == true {
+                    $0.localUserID = Data(($0.deviceID ?? defaultDevID).utf8).base64EncodedString()
+                }
                 if let routingInfo { $0.routingInfo = routingInfo }
                 if $0.date == nil && $0.clientTime == nil { $0.date = Date() }
                 if customHeaders?.clientInfo == nil { $0.clientInfo = self.clientInfo }
