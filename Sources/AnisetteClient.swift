@@ -246,7 +246,7 @@ extension AnisetteClient {
         let lookupReq = createRequest(url: lookupURL, identifier: identifier, httpMethod: "GET", routingInfo: nil as String?, headers: customHeaders)
 
         let (lookupData, lookupResp) = try await sendRequest(lookupReq, step: "Lookup", endpointName: "Apple lookup")
-        var activeRoutingInfo = extractRoutingInfo(from: lookupResp, data: lookupData) ?? customHeaders?.routingInfo ?? AnisetteConstants.defaultRoutingInfo
+        var activeRoutingInfo: String? = extractRoutingInfo(from: lookupResp, data: lookupData) ?? customHeaders?.routingInfo ?? AnisetteConstants.defaultRoutingInfo
 
         guard let plist = try PropertyListSerialization.propertyList(from: lookupData, options: [], format: nil) as? [String: Any],
               let urls = plist["urls"] as? [String: String],
