@@ -14,6 +14,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#if defined(__APPLE__)
+extern "C" void macho_init_unicorn_compat(void);
+#endif
+
 #if defined(_WIN32) || defined(_MSC_VER)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -165,8 +169,9 @@ EmulatorVM::EmulatorVM()
       next_import_address(kImportAddress),
       next_guest_fd(10)
 {
-    extern "C" void macho_init_unicorn_compat(void);
+#if defined(__APPLE__)
     macho_init_unicorn_compat();
+#endif
 
     uc_err err = uc_open(UC_ARCH_ARM64, UC_MODE_ARM, &uc);
     if (err != UC_ERR_OK) {

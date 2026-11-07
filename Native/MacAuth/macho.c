@@ -56,6 +56,7 @@ static struct sigaction g_prev_sigbus;
 static bool g_unicorn_compat_initialized = false;
 
 static void unicorn_sigbus_handler(int sig, siginfo_t *info, void *ucontext_raw) {
+#if defined(__arm64__) || defined(__aarch64__)
     ucontext_t *uc = (ucontext_t *)ucontext_raw;
     uint32_t esr = uc->uc_mcontext->__es.__esr;
     uint32_t ec = (esr >> 26) & 0x3f;
@@ -86,6 +87,7 @@ static void unicorn_sigbus_handler(int sig, siginfo_t *info, void *ucontext_raw)
             }
         }
     }
+#endif
 
     /* Fallback to previous handler if not handled */
     if (g_prev_sigbus.sa_flags & SA_SIGINFO) {
