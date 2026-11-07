@@ -9,9 +9,9 @@
 import Foundation
 
 public enum AnisetteConstants {
-    public static let defaultClientInfo     = "<MacBookPro13,3> <Mac OS X;10.12.6;16G29> <com.apple.AuthKit/1 (com.apple.akd/1.0)>"
-    public static let defaultUserAgent      = "akd/1.0 CFNetwork/811.5.4 Darwin/16.7.0"
-    public static let defaultRoutingInfo    = "33883392"    // 0x02050500 routing code for macOS 10.12.6 / MacBookPro13,3 
+    public static let defaultClientInfo     = "<MacBookPro18,1> <Mac OS X;13.5;22G90> <com.apple.AuthKit/1 (com.apple.dt.Xcode/14.3.1)>"
+    public static let defaultUserAgent      = "akd/1.0 CFNetwork/1410.0.3 Darwin/22.6.0"
+    public static let defaultRoutingInfo    = "17106176"    // Routing code for macOS 13.5 / MacBookPro18,1 
     public static let defaultLocalUserID    = ""            // Dynamically derived from device ID (needs proper testing)
     public static let defaultSerialNumber   = "0"
     public static let defaultLocale         = "en_US"

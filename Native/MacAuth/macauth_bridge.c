@@ -39,14 +39,18 @@ int32_t get_anisette_headers_macauth(
              "\"X-Apple-I-MD-LU\":\"%s\","
              "\"X-Apple-I-TimeZone\":\"%s\","
              "\"X-Apple-I-Locale\":\"%s\","
-             "\"X-Apple-I-Client-Time\":\"%s\"}",
+             "\"X-Apple-I-Client-Time\":\"%s\","
+             "\"X-MMe-Client-Info\":\"%s\","
+             "\"User-Agent\":\"%s\"}",
              h.x_apple_i_md_m ? h.x_apple_i_md_m : "",
              h.x_apple_i_md ? h.x_apple_i_md : "",
              h.x_apple_i_md_rinfo ? h.x_apple_i_md_rinfo : "17106176",
              h.x_apple_i_md_lu ? h.x_apple_i_md_lu : "",
              h.x_apple_i_timezone ? h.x_apple_i_timezone : "UTC",
              h.x_apple_i_locale ? h.x_apple_i_locale : "en_US",
-             h.x_apple_i_client_time ? h.x_apple_i_client_time : "");
+             h.x_apple_i_client_time ? h.x_apple_i_client_time : "",
+             h.x_mme_client_info ? h.x_mme_client_info : "",
+             h.user_agent ? h.user_agent : "");
 
     macauth_free_anisette_headers(&h);
     *out_json = json;

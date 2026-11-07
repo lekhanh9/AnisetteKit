@@ -165,12 +165,22 @@ extension AnisetteClient {
                 if $0.localUserID == nil || $0.localUserID?.isEmpty == true || $0.localUserID?.contains("0000000000") == true {
                     $0.localUserID = Data(($0.deviceID ?? defaultDevID).utf8).base64EncodedString()
                 }
-                if let storedRinfo = getStoredRoutingInfo(for: identifier) {
+                if let respRinfo = response.routingInfo, !respRinfo.isEmpty {
+                    $0.routingInfo = respRinfo
+                } else if let storedRinfo = getStoredRoutingInfo(for: identifier) {
                     $0.routingInfo = storedRinfo
                 }
                 if $0.date == nil && $0.clientTime == nil { $0.date = Date() }
-                if customHeaders?.clientInfo == nil { $0.clientInfo = self.clientInfo }
-                if customHeaders?.userAgent == nil { $0.userAgent = self.userAgent }
+                if let respClientInfo = response.clientInfo, !respClientInfo.isEmpty {
+                    $0.clientInfo = respClientInfo
+                } else if customHeaders?.clientInfo == nil {
+                    $0.clientInfo = self.clientInfo
+                }
+                if let respUserAgent = response.userAgent, !respUserAgent.isEmpty {
+                    $0.userAgent = respUserAgent
+                } else if customHeaders?.userAgent == nil {
+                    $0.userAgent = self.userAgent
+                }
             }
 
         return (AnisetteHeadersDTO.toDictionary(from: headers), generatedBlob)

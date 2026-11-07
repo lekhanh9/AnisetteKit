@@ -11,10 +11,22 @@ import Foundation
 public struct AnisetteDataResponse: Sendable, Codable, Equatable, Hashable {
     public let oneTimePassword: String
     public let machineID: String
+    public let routingInfo: String?
+    public let clientInfo: String?
+    public let userAgent: String?
 
-    public init(oneTimePassword: String, machineID: String) {
+    public init(
+        oneTimePassword: String,
+        machineID: String,
+        routingInfo: String? = nil,
+        clientInfo: String? = nil,
+        userAgent: String? = nil
+    ) {
         self.oneTimePassword = oneTimePassword
         self.machineID = machineID
+        self.routingInfo = routingInfo
+        self.clientInfo = clientInfo
+        self.userAgent = userAgent
     }
 
     public init(from dictionary: [String: String]) throws {
@@ -25,5 +37,8 @@ public struct AnisetteDataResponse: Sendable, Codable, Equatable, Hashable {
         }
         self.oneTimePassword = otp
         self.machineID = mid
+        self.routingInfo = dictionary[AnisetteConstants.Headers.routingInfo]
+        self.clientInfo = dictionary[AnisetteConstants.Headers.clientInfo]
+        self.userAgent = dictionary[AnisetteConstants.Headers.userAgent]
     }
 }
