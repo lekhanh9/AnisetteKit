@@ -19,6 +19,8 @@
 #endif
 #include <sys/stat.h>
 
+extern "C" void macho_init_unicorn_compat(void);
+
 #if defined(_WIN32) || defined(_MSC_VER)
 #define NOMINMAX
 #include <io.h>
@@ -155,6 +157,7 @@ int32_t get_anisette_headers_uc(
     char **out_json
 ) {
     LOG_UC("[AnisetteKit - UC] Invoked get_anisette_headers_uc\n");
+    macho_init_unicorn_compat();
     if (!lib_dir || !provisioning_dir || !identifier || !adi_pb || !out_json) {
         return ANISETTE_ERR_INVALID_ARGUMENT;
     }

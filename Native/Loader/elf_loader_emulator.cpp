@@ -165,6 +165,9 @@ EmulatorVM::EmulatorVM()
       next_import_address(kImportAddress),
       next_guest_fd(10)
 {
+    extern "C" void macho_init_unicorn_compat(void);
+    macho_init_unicorn_compat();
+
     uc_err err = uc_open(UC_ARCH_ARM64, UC_MODE_ARM, &uc);
     if (err != UC_ERR_OK) {
         LOG_UC("[Emulator] Failed on uc_open() with error returned: %u (%s)\n", err, uc_strerror(err));
