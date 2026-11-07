@@ -48,7 +48,9 @@ let package = Package(
             dependencies: unicornCoreDependencies,
             path: "Native",
             cSettings: [
-                .headerSearchPath(".")
+                .headerSearchPath("."),
+                .headerSearchPath("include"),
+                .headerSearchPath("MacAuth")
             ],
             linkerSettings: unicornLinkerSettings
         ),

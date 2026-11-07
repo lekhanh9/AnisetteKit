@@ -50,6 +50,12 @@ const char* get_anisette_error_description(int32_t code);
 
 void free_c_string(char *ptr);
 
+int32_t get_anisette_headers_macauth(
+    const char *authkit_path,
+    const char *aidauth_path,
+    char **out_json
+);
+
 int32_t get_anisette_headers_c(
     const char *lib_dir,
     const char *provisioning_dir,

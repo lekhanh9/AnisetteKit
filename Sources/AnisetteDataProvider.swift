@@ -126,3 +126,31 @@ public struct NativeAnisetteDataProvider: AnisetteDataProvider {
     }
 }
 #endif
+
+public struct MacAuthAnisetteDataProvider: AnisetteDataProvider {
+    public var requiresLocalLibraries: Bool { false }
+    public let authKitPath: String?
+    public let aidAuthPath: String?
+
+    public init(authKitPath: String? = nil, aidAuthPath: String? = nil) {
+        self.authKitPath = authKitPath
+        self.aidAuthPath = aidAuthPath
+    }
+
+    public func getAnisetteHeaders(libDir: String, provisioningDir: String, identifier: [UInt8], adiPb: [UInt8]) throws -> AnisetteDataResponse {
+        var outPtr: CStringPointer? = nil
+        let ak = authKitPath ?? (libDir.isEmpty ? nil : "\(libDir)/AuthKit")
+        let aid = aidAuthPath ?? (libDir.isEmpty ? nil : "\(libDir)/AppleIDAuthSupport")
+        let res = get_anisette_headers_macauth(ak, aid, &outPtr)
+        defer { if let p = outPtr { free_c_string(p) } }
+        return try parseHeadersResponse(code: res, outPtr: outPtr, providerName: "MacAuth")
+    }
+
+    public func startProvision(libDir: String, provisioningDir: String, identifier: [UInt8], spim: [UInt8]) throws -> (cpim: Data, session: UInt32) {
+        return (Data(), 0)
+    }
+
+    public func endProvision(libDir: String, provisioningDir: String, identifier: [UInt8], session: UInt32, ptm: [UInt8], tk: [UInt8]) throws -> Data {
+        return Data()
+    }
+}
