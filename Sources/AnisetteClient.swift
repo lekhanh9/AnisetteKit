@@ -140,8 +140,7 @@ extension AnisetteClient {
         let (adiPbData, generatedBlob, cleanup) = try await resolveProvisioningBlob(
             identifier: identifier,
             storage: storage,
-            headers: customHeaders,
-            provider: provider
+            headers: customHeaders
         ) {
             try await self.runProvisioningFlow(identifier: identifier, headers: customHeaders, provider: provider)
         }
@@ -207,7 +206,6 @@ extension AnisetteClient {
         identifier: UUID,
         storage: ProvisioningStorage,
         headers customHeaders: AnisetteRequestHeaders? = nil,
-        provider: any AnisetteDataProvider,
         provisioner: () async throws -> Data
     ) async throws -> (data: Data, generated: Data?, cleanup: () -> Void) {
         let uuidProvDir = provisioningDir.appendingPathComponent(identifier.uuidString.lowercased())
@@ -226,7 +224,7 @@ extension AnisetteClient {
             setCachedRoutingInfo(customRinfo, for: identifier)
         }
 
-        if !provider.requiresLocalLibraries {
+        if !self.provider.requiresLocalLibraries {
             return (Data(), nil, cleanup)
         }
 
