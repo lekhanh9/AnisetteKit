@@ -14,7 +14,7 @@ let unicornBinaryTargets: [Target] = [
     .binaryTarget(
         name: "Unicorn",
         url: "https://github.com/lekhanh9/unicorn-next/releases/download/2.1.4-local/Unicorn.xcframework.zip#AnisetteKit",
-        checksum: "46aeeb0551683c1f4b16dcac89c74d41342d78a82c7b692f9c6fc8e7b6c39c71"
+        checksum: "b35137660cda8f9207397597d2b1e9f09be7e424b88622ab6b8aafcd890d2667"
     )
 ]
 let unicornCoreDependencies: [Target.Dependency] = [
