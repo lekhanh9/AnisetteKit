@@ -146,7 +146,7 @@ extension AnisetteClient {
         }
         defer { cleanup() }
 
-        var response: AnisetteDataResponse
+        let response: AnisetteDataResponse
         do {
             response = try await provider.getAnisetteHeaders(
                 libDir: libDir?.path ?? "",
@@ -154,8 +154,8 @@ extension AnisetteClient {
                 identifier: identifier.uuidBytes,
                 adiPb: [UInt8](adiPbData)
             )
-        } catch let error as AnisetteError {
-            if case .adiError(let code, _) = error, code == -45061 {
+        } catch {
+            if let adiErr = error as? AnisetteError, case .adiError(let code, _) = adiErr, code == -45061 {
                 verboseLog("[AnisetteKit] Device not provisioned (-45061). Triggering automatic provisioning flow...")
                 let newBlob = try await self.runProvisioningFlow(identifier: identifier, headers: customHeaders, provider: provider)
                 response = try await provider.getAnisetteHeaders(
