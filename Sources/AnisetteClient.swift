@@ -146,12 +146,28 @@ extension AnisetteClient {
         }
         defer { cleanup() }
 
-        let response = try await provider.getAnisetteHeaders(
-            libDir: libDir?.path ?? "",
-            provisioningDir: provisioningDir.path,
-            identifier: identifier.uuidBytes,
-            adiPb: [UInt8](adiPbData)
-        )
+        var response: AnisetteDataResponse
+        do {
+            response = try await provider.getAnisetteHeaders(
+                libDir: libDir?.path ?? "",
+                provisioningDir: provisioningDir.path,
+                identifier: identifier.uuidBytes,
+                adiPb: [UInt8](adiPbData)
+            )
+        } catch let error as AnisetteError {
+            if case .adiError(let code, _) = error, code == -45061 {
+                verboseLog("[AnisetteKit] Device not provisioned (-45061). Triggering automatic provisioning flow...")
+                let newBlob = try await self.runProvisioningFlow(identifier: identifier, headers: customHeaders, provider: provider)
+                response = try await provider.getAnisetteHeaders(
+                    libDir: libDir?.path ?? "",
+                    provisioningDir: provisioningDir.path,
+                    identifier: identifier.uuidBytes,
+                    adiPb: [UInt8](newBlob)
+                )
+            } else {
+                throw error
+            }
+        }
 
         let defaultDevID = identifier.uuidString.uppercased()
         let headers = AnisetteRequestHeaders.defaultHeaders

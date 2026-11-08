@@ -92,7 +92,8 @@ int32_t start_provision_macauth(
         return ANISETTE_ERR_LOADER_FAILED;
     }
 
-    snprintf(json, cap, "{\"cpim\":\"%s\",\"session\":%u}", cpim_b64 ? cpim_b64 : "", session);
+    snprintf(json, cap, "{\"cpim_base64\":\"%s\",\"cpim\":\"%s\",\"session\":%u}",
+             cpim_b64 ? cpim_b64 : "", cpim_b64 ? cpim_b64 : "", session);
     if (cpim_b64) free(cpim_b64);
 
     *out_json = json;
