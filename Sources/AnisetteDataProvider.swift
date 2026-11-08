@@ -147,10 +147,18 @@ public struct MacAuthAnisetteDataProvider: AnisetteDataProvider {
     }
 
     public func startProvision(libDir: String, provisioningDir: String, identifier: [UInt8], spim: [UInt8]) throws -> (cpim: Data, session: UInt32) {
-        return (Data(), 0)
+        var outPtr: CStringPointer? = nil
+        let ak = authKitPath ?? (libDir.isEmpty ? nil : "\(libDir)/akd")
+        let res = start_provision_macauth(ak, spim, UInt32(spim.count), &outPtr)
+        defer { if let p = outPtr { free_c_string(p) } }
+        return try parseStartProvisionResponse(code: res, outPtr: outPtr, providerName: "MacAuth")
     }
 
     public func endProvision(libDir: String, provisioningDir: String, identifier: [UInt8], session: UInt32, ptm: [UInt8], tk: [UInt8]) throws -> Data {
-        return Data()
+        var outPtr: CStringPointer? = nil
+        let ak = authKitPath ?? (libDir.isEmpty ? nil : "\(libDir)/akd")
+        let res = end_provision_macauth(ak, session, ptm, UInt32(ptm.count), &outPtr)
+        defer { if let p = outPtr { free_c_string(p) } }
+        return try parseEndProvisionResponse(code: res, outPtr: outPtr, providerName: "MacAuth")
     }
 }

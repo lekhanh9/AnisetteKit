@@ -56,6 +56,21 @@ int32_t get_anisette_headers_macauth(
     char **out_json
 );
 
+int32_t start_provision_macauth(
+    const char *authkit_path,
+    const uint8_t *spim,
+    uint32_t spim_len,
+    char **out_json
+);
+
+int32_t end_provision_macauth(
+    const char *authkit_path,
+    uint32_t session,
+    const uint8_t *ptm,
+    uint32_t ptm_len,
+    char **out_json
+);
+
 int32_t get_anisette_headers_c(
     const char *lib_dir,
     const char *provisioning_dir,

@@ -56,3 +56,87 @@ int32_t get_anisette_headers_macauth(
     *out_json = json;
     return ANISETTE_OK;
 }
+
+int32_t start_provision_macauth(
+    const char *authkit_path,
+    const uint8_t *spim,
+    uint32_t spim_len,
+    char **out_json
+) {
+    if (!out_json) return ANISETTE_ERR_INVALID_ARGUMENT;
+
+    int r = macauth_init(authkit_path, NULL);
+    if (r != 0) {
+        *out_json = strdup("{\"error\":\"Failed to initialize MacAuth emulator\"}");
+        return ANISETTE_ERR_LOADER_FAILED;
+    }
+
+    uint8_t *cpim = NULL;
+    uint32_t cpim_len = 0;
+    uint32_t session = 0;
+
+    r = macauth_start_provision(spim, spim_len, &cpim, &cpim_len, &session);
+    if (r != 0 && r != -45061) {
+        if (cpim) free(cpim);
+        *out_json = strdup("{\"error\":\"ADIProvisioningStart failed\"}");
+        return r;
+    }
+
+    char *cpim_b64 = cpim ? macauth_base64_encode(cpim, cpim_len) : strdup("");
+    if (cpim) free(cpim);
+
+    size_t cap = (cpim_b64 ? strlen(cpim_b64) : 0) + 128;
+    char *json = (char *)malloc(cap);
+    if (!json) {
+        if (cpim_b64) free(cpim_b64);
+        return ANISETTE_ERR_LOADER_FAILED;
+    }
+
+    snprintf(json, cap, "{\"cpim\":\"%s\",\"session\":%u}", cpim_b64 ? cpim_b64 : "", session);
+    if (cpim_b64) free(cpim_b64);
+
+    *out_json = json;
+    return ANISETTE_OK;
+}
+
+int32_t end_provision_macauth(
+    const char *authkit_path,
+    uint32_t session,
+    const uint8_t *ptm,
+    uint32_t ptm_len,
+    char **out_json
+) {
+    if (!out_json) return ANISETTE_ERR_INVALID_ARGUMENT;
+
+    int r = macauth_init(authkit_path, NULL);
+    if (r != 0) {
+        *out_json = strdup("{\"error\":\"Failed to initialize MacAuth emulator\"}");
+        return ANISETTE_ERR_LOADER_FAILED;
+    }
+
+    uint8_t *routing = NULL;
+    uint32_t routing_len = 0;
+
+    r = macauth_end_provision(session, ptm, ptm_len, &routing, &routing_len);
+    if (r != 0) {
+        if (routing) free(routing);
+        *out_json = strdup("{\"error\":\"ADIProvisioningEnd failed\"}");
+        return r;
+    }
+
+    char *routing_b64 = routing ? macauth_base64_encode(routing, routing_len) : strdup("");
+    if (routing) free(routing);
+
+    size_t cap = (routing_b64 ? strlen(routing_b64) : 0) + 128;
+    char *json = (char *)malloc(cap);
+    if (!json) {
+        if (routing_b64) free(routing_b64);
+        return ANISETTE_ERR_LOADER_FAILED;
+    }
+
+    snprintf(json, cap, "{\"adi_pb_base64\":\"%s\"}", routing_b64 ? routing_b64 : "");
+    if (routing_b64) free(routing_b64);
+
+    *out_json = json;
+    return ANISETTE_OK;
+}
